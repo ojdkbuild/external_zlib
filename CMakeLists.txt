@@ -28,6 +28,8 @@ add_library( ${PROJECT_NAME} STATIC IMPORTED GLOBAL )
 # LOCATION property does not work and TARGET_FILE generator expression is problematic here
 if ( STATICLIB_TOOLCHAIN MATCHES "windows_(i386|amd64)_msvc" )
     set ( zlibstatic_LOCATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/zlibstaticd${CMAKE_STATIC_LIBRARY_SUFFIX} )
+elseif ( STATICLIB_TOOLCHAIN MATCHES "ios_[^_]+_clang" )
+    set ( zlibstatic_LOCATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libzlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX} )
 else ( )
     set ( zlibstatic_LOCATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz${CMAKE_STATIC_LIBRARY_SUFFIX} )
 endif ( )
