@@ -24,7 +24,6 @@ int main() {
     // placeholder for the UNcompressed (inflated) version of "b"
     char c[50];
 
-    printf("Uncompressed size is: %lu\n", strlen(a));
     printf("Uncompressed string is: %s\n", a);
 
 
@@ -47,7 +46,6 @@ int main() {
     deflate(&defstream, Z_FINISH);
     deflateEnd(&defstream);
     // This is one way of getting the size of the output
-    printf("Compressed size is: %lu\n", strlen(b));
     printf("Compressed string is: %s\n", b);
 
     printf("\n----------\n\n");
@@ -69,7 +67,6 @@ int main() {
     inflateInit(&infstream);
     inflate(&infstream, Z_NO_FLUSH);
     inflateEnd(&infstream);
-    printf("Uncompressed size is: %lu\n", strlen(c));
     printf("Uncompressed string is: %s\n", c);
 
     // make sure uncompressed is exactly equal to original.
