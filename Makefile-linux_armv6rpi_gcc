@@ -1,0 +1,22 @@
+
+export CC := ${CMAKE_C_COMPILER}
+export AR := ${CMAKE_AR}
+export AS := ${CMAKE_AS}
+export LD := ${CMAKE_LD}
+export NM := ${CMAKE_NM}
+export OBJCOPY := ${CMAKE_OBJCOPY}
+export OBJDUMP := ${CMAKE_OBJDUMP}
+export RANLIB := ${CMAKE_RANLIB}
+export STRIP := ${CMAKE_STRIP}
+export CFLAGS := ${${PROJECT_NAME}_CFLAGS}
+
+all:
+ifeq ($(wildcard ${CMAKE_CURRENT_BINARY_DIR}/zlib),)	
+	cp -a ${CMAKE_CURRENT_LIST_DIR}/zlib ${CMAKE_CURRENT_BINARY_DIR}/zlib
+	cd ${CMAKE_CURRENT_BINARY_DIR}/zlib && $(SH) ./configure --static
+	cd ${CMAKE_CURRENT_BINARY_DIR}/zlib && $(MAKE)
+	mkdir -p ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+	cp ${CMAKE_CURRENT_BINARY_DIR}/zlib/libz.a ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz.a
+else
+	@echo "[${CMAKE_CURRENT_BINARY_DIR}/zlib] directory found, skipping build"
+endif	
