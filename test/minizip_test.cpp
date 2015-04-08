@@ -48,7 +48,8 @@ void test_unzip() {
     assert(!open_res);
     
     std::array<char, 3> buf{{}};
-    auto read_res = unzReadCurrentFile(zf, buf.data(), buf.size());
+    auto len = static_cast<unsigned int>(buf.size());
+    auto read_res = unzReadCurrentFile(zf, buf.data(), len);
     assert(3 == read_res);
     assert("bar" == std::string(buf.data(), buf.size()));
     
