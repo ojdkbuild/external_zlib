@@ -31,11 +31,15 @@ set ( ${PROJECT_NAME}_INCLUDES
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip )
 
 # build minizip
-add_library( ${PROJECT_NAME}_minizip STATIC         
+set ( ${PROJECT_NAME}_minizip_SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
-#        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c 
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/unzip.c
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/zip.c )
+if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
+    set ( ${PROJECT_NAME}_minizip_SOURCES ${${PROJECT_NAME}_minizip_SOURCES}
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c )
+endif ( )
+add_library( ${PROJECT_NAME}_minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
 target_link_libraries ( ${PROJECT_NAME}_minizip ${PROJECT_NAME} )
 target_include_directories ( ${PROJECT_NAME}_minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
 
