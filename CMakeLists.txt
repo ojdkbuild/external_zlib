@@ -44,34 +44,27 @@ set ( ${PROJECT_NAME}_INCLUDES
         ${CMAKE_CURRENT_BINARY_DIR}/zlib
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip )
 
-# build minizip, it is currently broken for android due to lack of fopen64
-if ( NOT STATICLIB_TOOLCHAIN MATCHES "android_[^_]+_[^_]+" )
-    set ( ${PROJECT_NAME}_minizip_SOURCES
-            ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
-            ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/unzip.c
-            ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/zip.c )
-    if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
-        set ( ${PROJECT_NAME}_minizip_SOURCES ${${PROJECT_NAME}_minizip_SOURCES}
-            ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c )
-    endif ( )
-    add_library( ${PROJECT_NAME}_minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
-    target_link_libraries ( ${PROJECT_NAME}_minizip ${PROJECT_NAME} )
-    target_include_directories ( ${PROJECT_NAME}_minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
-
-    # test
-    set ( ${PROJECT_NAME}_TEST_INCLUDES ${${PROJECT_NAME}_INCLUDES} )
-    set ( ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME} ${PROJECT_NAME}_minizip )
-    set ( ${PROJECT_NAME}_TEST_OPTS "" )
-    staticlib_enable_testing ( ${PROJECT_NAME}_TEST_INCLUDES ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME}_TEST_OPTS )
-# add zlib test manually for android
-elseif ( "${STATICLIB_ROOT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}" )
-    enable_testing ( )
-    message ( STATUS "Adding test: [zlib_test]" )
-    add_executable ( zlib_test ${CMAKE_CURRENT_LIST_DIR}/test/zlib_test.cpp )
-    target_include_directories ( zlib_test BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
-    target_link_libraries ( zlib_test ${PROJECT_NAME} )
-    add_test ( zlib_test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/zlib_test )
+# build minizip
+set ( ${PROJECT_NAME}_minizip_SOURCES
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/unzip.c
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/zip.c )
+if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
+    set ( ${PROJECT_NAME}_minizip_SOURCES ${${PROJECT_NAME}_minizip_SOURCES}
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c )
 endif ( )
+add_library( ${PROJECT_NAME}_minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
+target_link_libraries ( ${PROJECT_NAME}_minizip ${PROJECT_NAME} )
+if ( STATICLIB_TOOLCHAIN MATCHES "android_[^_]+_[^_]+" )
+    target_compile_definitions ( ${PROJECT_NAME}_minizip PRIVATE -DUSE_FILE32API )
+endif ( )
+target_include_directories ( ${PROJECT_NAME}_minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
+
+# test
+set ( ${PROJECT_NAME}_TEST_INCLUDES ${${PROJECT_NAME}_INCLUDES} )
+set ( ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME} ${PROJECT_NAME}_minizip )
+set ( ${PROJECT_NAME}_TEST_OPTS "" )
+staticlib_enable_testing ( ${PROJECT_NAME}_TEST_INCLUDES ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME}_TEST_OPTS )
 
 # export headers
 set ( ${PROJECT_NAME}_INCLUDES ${${PROJECT_NAME}_INCLUDES} CACHE INTERNAL "" )
