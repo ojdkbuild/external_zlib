@@ -32,46 +32,60 @@ namespace { // anonymous
 
 void test_zip() {
     auto zf = zipOpen("test.zip", APPEND_STATUS_CREATE);
+    (void) zf;
     assert(zf);
     {
         auto res_open1 = zipOpenNewFileInZip(zf, "file1", nullptr, nullptr,
                 0, nullptr, 0, nullptr, Z_DEFLATED, 6);
+        (void) res_open1;
         assert(!res_open1);
         auto res_write1 = zipWriteInFileInZip(zf, "foo", 3);
+        (void) res_write1;
         assert(!res_write1);
         auto res_close1 = zipCloseFileInZip(zf);
+        (void) res_close1;
         assert(!res_close1);
     }
     {
         auto res_open2 = zipOpenNewFileInZip(zf, "file2", nullptr, nullptr,
                 0, nullptr, 0, nullptr, Z_DEFLATED, 6);
+        (void) res_open2;
         assert(!res_open2);
         auto res_write2 = zipWriteInFileInZip(zf, "bar", 3);
+        (void) res_write2;
         assert(!res_write2);
         auto res_close2 = zipCloseFileInZip(zf);
+        (void) res_close2;
         assert(!res_close2);
     }
     auto res_close = zipClose(zf, nullptr);
+    (void) res_close;    
     assert(!res_close);    
 }
 
 void test_unzip() {
     auto zf = unzOpen("test.zip");
+    (void) zf;
     assert(zf);
     auto find_res = unzLocateFile(zf, "file2", 1);
+    (void) !find_res;
     assert(!find_res);
     auto open_res = unzOpenCurrentFile(zf);
+    (void) open_res;
     assert(!open_res);
     
     std::array<char, 3> buf{{}};
     auto len = static_cast<unsigned int>(buf.size());
     auto read_res = unzReadCurrentFile(zf, buf.data(), len);
+    (void) read_res;
     assert(3 == read_res);
     assert("bar" == std::string(buf.data(), buf.size()));
     
     auto res_close_current = unzCloseCurrentFile(zf);
+    (void) res_close_current;
     assert(!res_close_current);
     auto res_close = unzClose(zf);
+    (void) res_close;
     assert(!res_close);
 }
 

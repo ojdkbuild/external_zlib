@@ -17,6 +17,6 @@ all:
 	@if exist "${CMAKE_CURRENT_BINARY_DIR}/zlib" echo "flag" > "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag"
 	@if exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" echo "[${CMAKE_CURRENT_BINARY_DIR}/zlib] directory found, skipping build"
 	@if not exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" xcopy /s /i /q "${CMAKE_CURRENT_LIST_DIR}/zlib" "${CMAKE_CURRENT_BINARY_DIR}/zlib"
-	@if not exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" pushd "${CMAKE_CURRENT_BINARY_DIR}/zlib" & set CFLAGS=${${PROJECT_NAME}_CFLAGS} & cmake -G "NMake Makefiles" & popd
+	@if not exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" pushd "${CMAKE_CURRENT_BINARY_DIR}/zlib" & cmake -G "NMake Makefiles" -DCMAKE_C_FLAGS_DEBUG="${${PROJECT_NAME}_CFLAGS}" -DCMAKE_C_FLAGS_RELEASE="${${PROJECT_NAME}_CFLAGS}" & popd
 	@if not exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" pushd "${CMAKE_CURRENT_BINARY_DIR}/zlib" & nmake /nologo & popd
 	@if not exist "${CMAKE_CURRENT_BINARY_DIR}/zlib_exists.flag" echo f | xcopy /f /y "${CMAKE_CURRENT_BINARY_DIR}/zlib/zlibstaticd.lib" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz.lib"
