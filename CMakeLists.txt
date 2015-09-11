@@ -14,57 +14,61 @@
 
 cmake_minimum_required ( VERSION 2.8.12 )
 
-# toolchain setup
-set ( STATICLIB_TOOLCHAIN linux_amd64_gcc CACHE STRING "toolchain triplet" )
-set ( CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/cmake/toolchains/${STATICLIB_TOOLCHAIN}.cmake CACHE INTERNAL "" )
-
-# project setup
+# project
 project ( external_zlib CXX C )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.2 )
-# common include
-include ( ${CMAKE_CURRENT_LIST_DIR}/cmake/staticlibs_common.cmake )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.3 )
+set ( ${PROJECT_NAME}_DESCRIPTION "Zlib library build for Staticlibs" )
+set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/external_zlib.git )
 
-# build steps
+# variabled for makefiles
 if ( CMAKE_BUILD_TYPE MATCHES "Debug" )
     set ( ${PROJECT_NAME}_CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}" )
 endif ( )
 if ( CMAKE_BUILD_TYPE MATCHES "Release" )
     set ( ${PROJECT_NAME}_CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}" )
 endif ( )
-configure_file ( ${CMAKE_CURRENT_LIST_DIR}/Makefile-${STATICLIB_TOOLCHAIN}
+
+# zlib library
+configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/Makefile-${STATICLIB_TOOLCHAIN}
         ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
 add_custom_target( ${PROJECT_NAME}_build
         COMMAND ${CMAKE_MAKE_PROGRAM} -f ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
-add_library( ${PROJECT_NAME} STATIC IMPORTED GLOBAL )
-add_dependencies( ${PROJECT_NAME} ${PROJECT_NAME}_build )
-set_target_properties( ${PROJECT_NAME} PROPERTIES IMPORTED_LOCATION 
+add_library( zlib STATIC IMPORTED GLOBAL )
+add_dependencies( zlib ${PROJECT_NAME}_build )
+set_target_properties( zlib PROPERTIES IMPORTED_LOCATION 
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz${CMAKE_STATIC_LIBRARY_SUFFIX} )
-
 set ( ${PROJECT_NAME}_INCLUDES 
         ${CMAKE_CURRENT_BINARY_DIR}/zlib
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip )
-
-# build minizip
+# minizip
 set ( ${PROJECT_NAME}_minizip_SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/unzip.c
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/zip.c )
-if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
+if ( WIN32 )
     set ( ${PROJECT_NAME}_minizip_SOURCES ${${PROJECT_NAME}_minizip_SOURCES}
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c )
 endif ( )
-add_library( ${PROJECT_NAME}_minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
-target_link_libraries ( ${PROJECT_NAME}_minizip ${PROJECT_NAME} )
+add_library( minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
 if ( STATICLIB_TOOLCHAIN MATCHES "android_[^_]+_[^_]+" )
-    target_compile_definitions ( ${PROJECT_NAME}_minizip PRIVATE -DUSE_FILE32API )
+    target_compile_definitions ( minizip PRIVATE -DUSE_FILE32API )
 endif ( )
-target_include_directories ( ${PROJECT_NAME}_minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
+target_include_directories ( minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
 
-# test
-set ( ${PROJECT_NAME}_TEST_INCLUDES ${${PROJECT_NAME}_INCLUDES} )
-set ( ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME} ${PROJECT_NAME}_minizip )
-set ( ${PROJECT_NAME}_TEST_OPTS "" )
-staticlib_enable_testing ( ${PROJECT_NAME}_TEST_INCLUDES ${PROJECT_NAME}_TEST_LIBS ${PROJECT_NAME}_TEST_OPTS )
-
-# export headers
-set ( ${PROJECT_NAME}_INCLUDES ${${PROJECT_NAME}_INCLUDES} CACHE INTERNAL "" )
+# pkg-config
+if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
+    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+endif ( )
+# zlib
+set ( ${PROJECT_NAME}_MODULE zlib )
+set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib" )
+set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lz" )
+configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/zlib.pc )
+# minizip
+set ( ${PROJECT_NAME}_MODULE minizip )
+set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip" )
+set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lminizip" )
+set ( ${PROJECT_NAME}_PC_REQUIRES "zlib" )
+configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/minizip.pc )
