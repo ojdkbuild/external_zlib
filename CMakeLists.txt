@@ -33,9 +33,9 @@ configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/Makefile-${STATICLIB_TOOLCH
         ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
 add_custom_target( ${PROJECT_NAME}_build
         COMMAND ${CMAKE_MAKE_PROGRAM} -f ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
-add_library( zlib STATIC IMPORTED GLOBAL )
-add_dependencies( zlib ${PROJECT_NAME}_build )
-set_target_properties( zlib PROPERTIES IMPORTED_LOCATION 
+add_library( z STATIC IMPORTED GLOBAL )
+add_dependencies( z ${PROJECT_NAME}_build )
+set_target_properties( z PROPERTIES IMPORTED_LOCATION 
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz${CMAKE_STATIC_LIBRARY_SUFFIX} )
 set ( ${PROJECT_NAME}_INCLUDES 
         ${CMAKE_CURRENT_BINARY_DIR}/zlib
@@ -54,6 +54,7 @@ if ( STATICLIB_TOOLCHAIN MATCHES "android_[^_]+_[^_]+" )
     target_compile_definitions ( minizip PRIVATE -DUSE_FILE32API )
 endif ( )
 target_include_directories ( minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
+add_dependencies ( minizip ${PROJECT_NAME}_build )
 
 # pkg-config
 if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
