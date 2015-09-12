@@ -39,7 +39,7 @@ set_target_properties( z PROPERTIES IMPORTED_LOCATION
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz${CMAKE_STATIC_LIBRARY_SUFFIX} )
 set ( ${PROJECT_NAME}_INCLUDES 
         ${CMAKE_CURRENT_BINARY_DIR}/zlib
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip )
+        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib )
 # minizip
 set ( ${PROJECT_NAME}_minizip_SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
@@ -68,7 +68,7 @@ configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/zlib.pc )
 # minizip
 set ( ${PROJECT_NAME}_MODULE minizip )
-set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip" )
+set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_LIST_DIR}/zlib/contrib" )
 set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lminizip" )
 set ( ${PROJECT_NAME}_PC_REQUIRES "zlib" )
 configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
