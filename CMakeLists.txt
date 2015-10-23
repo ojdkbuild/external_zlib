@@ -48,21 +48,6 @@ set_target_properties( z PROPERTIES IMPORTED_LOCATION
 set ( ${PROJECT_NAME}_INCLUDES 
         ${CMAKE_CURRENT_BINARY_DIR}/zlib
         ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib )
-# minizip
-set ( ${PROJECT_NAME}_minizip_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/ioapi.c 
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/unzip.c
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/zip.c )
-if ( WIN32 )
-    set ( ${PROJECT_NAME}_minizip_SOURCES ${${PROJECT_NAME}_minizip_SOURCES}
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib/minizip/iowin32.c )
-endif ( )
-add_library( minizip STATIC ${${PROJECT_NAME}_minizip_SOURCES} )
-if ( STATICLIB_TOOLCHAIN MATCHES "android_[^_]+_[^_]+" )
-    target_compile_definitions ( minizip PRIVATE -DUSE_FILE32API )
-endif ( )
-target_include_directories ( minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
-add_dependencies ( minizip ${PROJECT_NAME} )
 
 # pkg-config
 # zlib
@@ -71,10 +56,3 @@ set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib" )
 set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lz" )
 configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/zlib.pc )
-# minizip
-set ( ${PROJECT_NAME}_MODULE minizip )
-set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_LIST_DIR}/zlib/contrib" )
-set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lminizip" )
-set ( ${PROJECT_NAME}_PC_REQUIRES "zlib" )
-configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
-        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/minizip.pc )
