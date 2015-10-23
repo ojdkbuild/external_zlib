@@ -39,7 +39,7 @@ if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
 else ( )
     set ( ${PROJECT_NAME}_MAKE_PROGRAM make )
 endif ( )
-add_custom_target( ${PROJECT_NAME}
+add_custom_target( ${PROJECT_NAME} ALL
         COMMAND ${${PROJECT_NAME}_MAKE_PROGRAM} -f ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
 add_library( z STATIC IMPORTED GLOBAL )
 add_dependencies( z ${PROJECT_NAME} )
