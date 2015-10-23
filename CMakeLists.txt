@@ -29,6 +29,9 @@ if ( CMAKE_BUILD_TYPE MATCHES "Release" )
 endif ( )
 
 # zlib library
+if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
+    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+endif ( )
 configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/Makefile-${STATICLIB_TOOLCHAIN}
         ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
 if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
@@ -62,9 +65,6 @@ target_include_directories ( minizip BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} 
 add_dependencies ( minizip ${PROJECT_NAME} )
 
 # pkg-config
-if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
-    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
-endif ( )
 # zlib
 set ( ${PROJECT_NAME}_MODULE zlib )
 set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib" )
