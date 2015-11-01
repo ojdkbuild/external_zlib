@@ -20,39 +20,16 @@ set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.3 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Zlib library build for Staticlibs" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/external_zlib.git )
 
-# variabled for makefiles
-if ( CMAKE_BUILD_TYPE MATCHES "Debug" )
-    set ( ${PROJECT_NAME}_CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}" )
-endif ( )
-if ( CMAKE_BUILD_TYPE MATCHES "Release" )
-    set ( ${PROJECT_NAME}_CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}" )
-endif ( )
+# zlib subproject
+add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/resources/zlib_cmake ${CMAKE_CURRENT_BINARY_DIR}/zlib )
+add_custom_target ( ${PROJECT_NAME} DEPENDS z )
 
-# zlib library
+# pkg-config
 if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
     set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 endif ( )
-configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/Makefile-${STATICLIB_TOOLCHAIN}
-        ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
-if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_[^_]+" )
-    set ( ${PROJECT_NAME}_MAKE_PROGRAM nmake )
-else ( )
-    set ( ${PROJECT_NAME}_MAKE_PROGRAM make )
-endif ( )
-add_custom_target( ${PROJECT_NAME} ALL
-        COMMAND ${${PROJECT_NAME}_MAKE_PROGRAM} -f ${CMAKE_CURRENT_BINARY_DIR}/Makefile-${STATICLIB_TOOLCHAIN})
-add_library( z STATIC IMPORTED GLOBAL )
-add_dependencies( z ${PROJECT_NAME} )
-set_target_properties( z PROPERTIES IMPORTED_LOCATION 
-        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libz${CMAKE_STATIC_LIBRARY_SUFFIX} )
-set ( ${PROJECT_NAME}_INCLUDES 
-        ${CMAKE_CURRENT_BINARY_DIR}/zlib
-        ${CMAKE_CURRENT_LIST_DIR}/zlib/contrib )
-
-# pkg-config
-# zlib
 set ( ${PROJECT_NAME}_MODULE zlib )
-set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib" )
+set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib -I${CMAKE_CURRENT_LIST_DIR}/zlib" )
 set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lz" )
 configure_file ( ${CMAKE_CURRENT_LIST_DIR}/resources/pkg-config.in 
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pkgconfig/zlib.pc )

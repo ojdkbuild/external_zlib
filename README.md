@@ -3,10 +3,8 @@ Zlib library build for Staticlibs
 
 This project is a part of [Staticlibs](http://staticlibs.net/).
 
-This project contains a CMake wrapper for the [Zlib library](https://github.com/madler/zlib). 
-Wrapper uses `Makefile`s for each supported platform, supports toolchain specification
-with `STATICLIB_TOOLCHAIN` option and exports Zlib headers to be used from dependent projects.
-Wrapper doesn't use Zlib's own CMake script directly as it appeared too hard to integrate.
+This project contains a CMake build file for building the [Zlib library](https://github.com/madler/zlib)
+based on official Zlib's build project. 
 
 Zlib GitHub repository is used as a git submodule of this project. Zlib is pinned to version v1.2.8.
 
@@ -39,7 +37,7 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 Changelog
 ---------
 
-**2015-10-23**
+**2015-11-01**
 
  * version 1.2.8.3 - `pkg-config` integration
 
