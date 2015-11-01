@@ -23,7 +23,7 @@ Visual Studio development command prompt
     cd external_zlib
     mkdir build
     cd build
-    cmake .. -DSTATICLIB_TOOLCHAIN=windows_i386_msvc
+    cmake ..
     msbuild external_zlib.sln
 
 See [StaticlibsToolchains](https://github.com/staticlibs/wiki/wiki/StaticlibsToolchains) for 
@@ -32,7 +32,7 @@ more information about the toolchain setup and cross-compilation.
 License information
 -------------------
 
-This project is released under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+This project is released under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 Changelog
 ---------
