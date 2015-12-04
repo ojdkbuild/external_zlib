@@ -16,7 +16,7 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( external_zlib CXX C )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.4 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.5 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Zlib library build for Staticlibs" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/external_zlib.git )
 
