@@ -16,18 +16,20 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( external_zlib CXX C )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.5 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.2.8.4 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Zlib library build for Staticlibs" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/external_zlib.git )
+
+# standalone build
+if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
+    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+endif ( )
 
 # zlib subproject
 add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/resources/zlib_cmake ${CMAKE_CURRENT_BINARY_DIR}/zlib )
 add_custom_target ( ${PROJECT_NAME} DEPENDS z )
 
 # pkg-config
-if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
-    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
-endif ( )
 set ( ${PROJECT_NAME}_MODULE zlib )
 set ( ${PROJECT_NAME}_PC_CFLAGS "-I${CMAKE_CURRENT_BINARY_DIR}/zlib_install/include" )
 set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -lz" )

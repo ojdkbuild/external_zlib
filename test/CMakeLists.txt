@@ -24,10 +24,15 @@ set ( CMAKE_TOOLCHAIN_FILE ${STATICLIB_CMAKE}/toolchains/${STATICLIB_TOOLCHAIN}.
 # project
 project ( external_zlib_test CXX )
 include ( ${STATICLIB_CMAKE}/staticlibs_common.cmake )
+staticlib_enable_deplibs_cache ( )
 
 # dependencies
+if ( NOT DEFINED STATICLIB_DEPS )
+    set ( STATICLIB_DEPS ${CMAKE_CURRENT_LIST_DIR}/../../ CACHE INTERNAL "" )
+endif ( )
 staticlib_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../../external_zlib )
-set ( ${PROJECT_NAME}_DEPS zlib )
+staticlib_add_subdirectory ( ${STATICLIB_DEPS}/staticlib_config )
+set ( ${PROJECT_NAME}_DEPS zlib staticlib_config )
 staticlib_pkg_check_modules ( ${PROJECT_NAME}_DEPS_PC REQUIRED ${PROJECT_NAME}_DEPS )
 
 # tests

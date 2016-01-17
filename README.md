@@ -8,7 +8,7 @@ based on official Zlib's build project.
 
 Zlib GitHub repository is used as a git submodule of this project. Zlib is pinned to version v1.2.8.
 
-Link to [documentation](http://www.zlib.net/manual.html).
+Link to the [documentation](http://www.zlib.net/manual.html).
 
 How to build
 ------------
@@ -36,6 +36,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2016-01-17**
+
+ * version 1.2.8.4
+ * minor CMake changes
 
 **2015-12-03**
 

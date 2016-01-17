@@ -21,16 +21,17 @@
  * Created on February 21, 2015, 12:58 AM
  */
 
+#include <iostream>
 #include <cstdio>
 #include <cstring> // for strlen
-#include <cassert>
 
 #include "zlib.h"
 
+#include "staticlib/config/assert.hpp"
+
 // https://gist.github.com/arq5x/5315739
 // adapted from: http://stackoverflow.com/questions/7540259/deflate-and-inflate-zlib-h-in-c
-
-int main() {
+void test_deflate() {
     // original string len = 36
     char a[50] = "Hello Hello Hello Hello Hello Hello!";
 
@@ -66,7 +67,6 @@ int main() {
 
     printf("\n----------\n\n");
 
-
     // STEP 2.
     // inflate b into c
     // zlib struct
@@ -86,8 +86,15 @@ int main() {
     printf("Uncompressed string is: %s\n", c);
 
     // make sure uncompressed is exactly equal to original.
-    assert(strcmp(a, c) == 0);
-
-    return 0;
+    slassert(strcmp(a, c) == 0);
 }
 
+int main() {
+    try {
+        test_deflate();
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
+    return 0;
+}
