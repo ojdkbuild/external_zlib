@@ -39,7 +39,7 @@ Changelog
 
 **2016-01-17**
 
- * version 1.2.8.4
+ * version 1.2.8.6
  * minor CMake changes
 
 **2015-12-03**
