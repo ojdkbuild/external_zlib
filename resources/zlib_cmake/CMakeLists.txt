@@ -103,6 +103,8 @@ endif ( )
 
 add_library ( ${PROJECT_NAME} STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${${PROJECT_NAME}_SRCDIR})
+target_compile_definitions ( ${PROJECT_NAME} PRIVATE -DZLIB_CONST)
+
 if ( ${CMAKE_C_COMPILER_ID}x MATCHES "MSVCx" )
     target_compile_definitions ( ${PROJECT_NAME} PRIVATE
             -D_CRT_SECURE_NO_DEPRECATE  
