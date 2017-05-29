@@ -21,67 +21,78 @@ set ( VERSION "1.2.7" )
 
 set ( ${PROJECT_NAME}_SRCDIR ${CMAKE_CURRENT_LIST_DIR}/../../zlib )
 
-include(CheckTypeSize)
-include(CheckFunctionExists)
-include(CheckIncludeFile)
-include(CheckCSourceCompiles)
-enable_testing()
+if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_msvc" )
+    set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_LIST_DIR}/${STATICLIB_TOOLCHAIN} )
+            
+else ( )
+    include(CheckTypeSize)
+    include(CheckFunctionExists)
+    include(CheckIncludeFile)
+    include(CheckCSourceCompiles)
+    enable_testing()
 
-check_include_file(sys/types.h HAVE_SYS_TYPES_H)
-check_include_file(stdint.h    HAVE_STDINT_H)
-check_include_file(stddef.h    HAVE_STDDEF_H)
+    check_include_file(sys/types.h HAVE_SYS_TYPES_H)
+    check_include_file(stdint.h    HAVE_STDINT_H)
+    check_include_file(stddef.h    HAVE_STDDEF_H)
 
-#
-# Check to see if we have large file support
-#
-set(CMAKE_REQUIRED_DEFINITIONS -D_LARGEFILE64_SOURCE=1)
-# We add these other definitions here because CheckTypeSize.cmake
-# in CMake 2.4.x does not automatically do so and we want
-# compatibility with CMake 2.4.x.
-if(HAVE_SYS_TYPES_H)
-    list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_SYS_TYPES_H)
-endif()
-if(HAVE_STDINT_H)
-    list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_STDINT_H)
-endif()
-if(HAVE_STDDEF_H)
-    list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_STDDEF_H)
-endif()
-check_type_size(off64_t OFF64_T)
-if(HAVE_OFF64_T)
-   add_definitions(-D_LARGEFILE64_SOURCE=1)
-endif()
-set(CMAKE_REQUIRED_DEFINITIONS) # clear variable
+    #
+    # Check to see if we have large file support
+    #
+    set(CMAKE_REQUIRED_DEFINITIONS -D_LARGEFILE64_SOURCE=1)
+    # We add these other definitions here because CheckTypeSize.cmake
+    # in CMake 2.4.x does not automatically do so and we want
+    # compatibility with CMake 2.4.x.
+    if(HAVE_SYS_TYPES_H)
+        list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_SYS_TYPES_H)
+    endif()
+    if(HAVE_STDINT_H)
+        list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_STDINT_H)
+    endif()
+    if(HAVE_STDDEF_H)
+        list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_STDDEF_H)
+    endif()
+    check_type_size(off64_t OFF64_T)
+    if(HAVE_OFF64_T)
+       add_definitions(-D_LARGEFILE64_SOURCE=1)
+    endif()
+    set(CMAKE_REQUIRED_DEFINITIONS) # clear variable
 
-#
-# Check for fseeko
-#
-check_function_exists(fseeko HAVE_FSEEKO)
-if(NOT HAVE_FSEEKO)
-    add_definitions(-DNO_FSEEKO)
-endif()
+    #
+    # Check for fseeko
+    #
+    check_function_exists(fseeko HAVE_FSEEKO)
+    if(NOT HAVE_FSEEKO)
+        add_definitions(-DNO_FSEEKO)
+    endif()
 
-#
-# Check for unistd.h
-#
-check_include_file(unistd.h Z_HAVE_UNISTD_H)
+    #
+    # Check for unistd.h
+    #
+    check_include_file(unistd.h Z_HAVE_UNISTD_H)
 
-configure_file(	${${PROJECT_NAME}_SRCDIR}/zconf.h.cmakein
-		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY )
+    set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+    
+    configure_file(	${${PROJECT_NAME}_SRCDIR}/zconf.h.cmakein
+            ${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY )            
+            
+    # parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
+    file(READ ${${PROJECT_NAME}_SRCDIR}/zlib.h _zlib_h_contents)
+    string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([-0-9A-Za-z.]+)\".*"
+        "\\1" ZLIB_FULL_VERSION ${_zlib_h_contents})
 
-# parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
-file(READ ${${PROJECT_NAME}_SRCDIR}/zlib.h _zlib_h_contents)
-string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([-0-9A-Za-z.]+)\".*"
-    "\\1" ZLIB_FULL_VERSION ${_zlib_h_contents})
+    #============================================================================
+    # zlib
+    #============================================================================
 
-#============================================================================
-# zlib
-#============================================================================
+endif ( )    
+    
+    set(ZLIB_PUBLIC_HDRS
+            ${${PROJECT_NAME}_ZCONF_H_DIR}/zconf.h
+            ${${PROJECT_NAME}_SRCDIR}/zlib.h
+    )
 
-set(ZLIB_PUBLIC_HDRS
-        ${CMAKE_CURRENT_BINARY_DIR}/zconf.h
-        ${${PROJECT_NAME}_SRCDIR}/zlib.h
-)
+FILE ( COPY ${ZLIB_PUBLIC_HDRS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../zlib_install/include )
+
 set ( ZLIB_PRIVATE_HDRS
         ${${PROJECT_NAME}_SRCDIR}/crc32.h
         ${${PROJECT_NAME}_SRCDIR}/deflate.h
@@ -111,8 +122,6 @@ set ( ZLIB_SRCS
         ${${PROJECT_NAME}_SRCDIR}/zutil.c
 )
 
-FILE ( COPY ${ZLIB_PUBLIC_HDRS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../zlib_install/include )
-
 # standalone build
 if ( DEFINED ZLIB_LIBRARY_OUTPUT_DIRECTORY )
     set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ZLIB_LIBRARY_OUTPUT_DIRECTORY} )
@@ -135,7 +144,7 @@ if ( STATICLIB_USE_DEPLIBS_CACHE )
 endif ( )
 
 add_library ( ${PROJECT_NAME} STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${${PROJECT_NAME}_SRCDIR})
+target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_SRCDIR})
 
 if ( ${CMAKE_C_COMPILER_ID}x MATCHES "MSVCx" )
     target_compile_options ( ${PROJECT_NAME} PRIVATE

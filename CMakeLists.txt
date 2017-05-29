@@ -27,6 +27,7 @@ endif ( )
 
 # zlib subproject
 add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/resources/zlib_cmake ${CMAKE_CURRENT_BINARY_DIR}/zlib )
+set_target_properties ( z PROPERTIES FOLDER "deps" )
 add_custom_target ( ${PROJECT_NAME} DEPENDS z )
 
 # pkg-config
