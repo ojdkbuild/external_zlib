@@ -21,9 +21,9 @@ set ( VERSION "1.2.7" )
 
 set ( ${PROJECT_NAME}_SRCDIR ${CMAKE_CURRENT_LIST_DIR}/../../zlib )
 
-if ( STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_msvc" )
+if ( external_zlib_ENABLE_PRECONFIGURATION AND STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_msvc" )
     set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_LIST_DIR}/${STATICLIB_TOOLCHAIN} )
-            
+
 else ( )
     include(CheckTypeSize)
     include(CheckFunctionExists)
