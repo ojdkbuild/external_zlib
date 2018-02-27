@@ -19,7 +19,9 @@ project ( z C )
 
 set ( VERSION "1.2.7" )
 
-set ( ${PROJECT_NAME}_SRCDIR ${CMAKE_CURRENT_LIST_DIR}/../../zlib )
+if ( NOT DEFINED ${PROJECT_NAME}_LOOKASIDE_DIR )
+    set ( ${PROJECT_NAME}_LOOKASIDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../lookaside_zlib )
+endif ( )
 
 if ( external_zlib_ENABLE_PRECONFIGURATION AND STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_msvc" )
     set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_LIST_DIR}/${STATICLIB_TOOLCHAIN} )
@@ -72,11 +74,11 @@ else ( )
 
     set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_BINARY_DIR} )
     
-    configure_file(	${${PROJECT_NAME}_SRCDIR}/zconf.h.cmakein
+    configure_file(	${${PROJECT_NAME}_LOOKASIDE_DIR}/zconf.h.cmakein
             ${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY )            
             
     # parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
-    file(READ ${${PROJECT_NAME}_SRCDIR}/zlib.h _zlib_h_contents)
+    file(READ ${${PROJECT_NAME}_LOOKASIDE_DIR}/zlib.h _zlib_h_contents)
     string(REGEX REPLACE ".*#define[ \t]+ZLIB_VERSION[ \t]+\"([-0-9A-Za-z.]+)\".*"
         "\\1" ZLIB_FULL_VERSION ${_zlib_h_contents})
 
@@ -88,38 +90,38 @@ endif ( )
     
     set(ZLIB_PUBLIC_HDRS
             ${${PROJECT_NAME}_ZCONF_H_DIR}/zconf.h
-            ${${PROJECT_NAME}_SRCDIR}/zlib.h
+            ${${PROJECT_NAME}_LOOKASIDE_DIR}/zlib.h
     )
 
 FILE ( COPY ${ZLIB_PUBLIC_HDRS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../zlib_install/include )
 
 set ( ZLIB_PRIVATE_HDRS
-        ${${PROJECT_NAME}_SRCDIR}/crc32.h
-        ${${PROJECT_NAME}_SRCDIR}/deflate.h
-        ${${PROJECT_NAME}_SRCDIR}/gzguts.h
-        ${${PROJECT_NAME}_SRCDIR}/inffast.h
-        ${${PROJECT_NAME}_SRCDIR}/inffixed.h
-        ${${PROJECT_NAME}_SRCDIR}/inflate.h
-        ${${PROJECT_NAME}_SRCDIR}/inftrees.h
-        ${${PROJECT_NAME}_SRCDIR}/trees.h
-        ${${PROJECT_NAME}_SRCDIR}/zutil.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/crc32.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/deflate.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/gzguts.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inffast.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inffixed.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inflate.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inftrees.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/trees.h
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/zutil.h
 )
 set ( ZLIB_SRCS
-        ${${PROJECT_NAME}_SRCDIR}/adler32.c
-        ${${PROJECT_NAME}_SRCDIR}/compress.c
-        ${${PROJECT_NAME}_SRCDIR}/crc32.c
-        ${${PROJECT_NAME}_SRCDIR}/deflate.c
-        ${${PROJECT_NAME}_SRCDIR}/gzclose.c
-        ${${PROJECT_NAME}_SRCDIR}/gzlib.c
-        ${${PROJECT_NAME}_SRCDIR}/gzread.c
-        ${${PROJECT_NAME}_SRCDIR}/gzwrite.c
-        ${${PROJECT_NAME}_SRCDIR}/inflate.c
-        ${${PROJECT_NAME}_SRCDIR}/infback.c
-        ${${PROJECT_NAME}_SRCDIR}/inftrees.c
-        ${${PROJECT_NAME}_SRCDIR}/inffast.c
-        ${${PROJECT_NAME}_SRCDIR}/trees.c
-        ${${PROJECT_NAME}_SRCDIR}/uncompr.c
-        ${${PROJECT_NAME}_SRCDIR}/zutil.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/adler32.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/compress.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/crc32.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/deflate.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/gzclose.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/gzlib.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/gzread.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/gzwrite.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inflate.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/infback.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inftrees.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/inffast.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/trees.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/uncompr.c
+        ${${PROJECT_NAME}_LOOKASIDE_DIR}/zutil.c
 )
 
 # standalone build
@@ -144,7 +146,7 @@ if ( STATICLIB_USE_DEPLIBS_CACHE )
 endif ( )
 
 add_library ( ${PROJECT_NAME} STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_SRCDIR})
+target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
 
 if ( ${CMAKE_C_COMPILER_ID}x MATCHES "MSVCx" )
     target_compile_options ( ${PROJECT_NAME} PRIVATE

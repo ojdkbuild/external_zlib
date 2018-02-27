@@ -6,11 +6,8 @@ Zlib library build for Staticlibs
 
 This project is a part of [Staticlibs](http://staticlibs.net/).
 
-This project contains a CMake build file for building the [Zlib library](http://www.zlib.net/)
-based on official Zlib's build project. 
-
-[Zlib sources imported from CentOS lookaside](https://github.com/ojdkbuild/lookaside_zlib.git)
-are used as a submodule of this project.
+This project contains a CMake build file for building the [Zlib library](http://www.zlib.net/) that
+can be used to build sources imported from [CentOS lookaside](https://github.com/staticlibs/lookaside_zlib.git).
 
 Link to the [documentation](http://www.zlib.net/manual.html).
 
@@ -40,6 +37,10 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2018-02-28**
+ * version 1.2.7-3
+ * drop submodule
 
 **2017-12-24**
  * version 1.2.7-2
