@@ -23,7 +23,7 @@ if ( NOT DEFINED ${PROJECT_NAME}_LOOKASIDE_DIR )
     set ( ${PROJECT_NAME}_LOOKASIDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../lookaside_zlib )
 endif ( )
 
-if ( external_zlib_ENABLE_PRECONFIGURATION AND STATICLIB_TOOLCHAIN MATCHES "windows_[^_]+_msvc" )
+if ( external_zlib_ENABLE_PRECONFIGURATION AND STATICLIB_TOOLCHAIN MATCHES "(windows_[^_]+_msvc|android_armeabi_gcc)" )
     set ( ${PROJECT_NAME}_ZCONF_H_DIR ${CMAKE_CURRENT_LIST_DIR}/${STATICLIB_TOOLCHAIN} )
 
 else ( )
