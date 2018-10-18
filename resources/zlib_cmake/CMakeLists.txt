@@ -155,3 +155,23 @@ if ( ${CMAKE_C_COMPILER_ID}x MATCHES "MSVCx" )
             -D_CRT_SECURE_NO_DEPRECATE  
             -D_CRT_NONSTDC_NO_DEPRECATE )
 endif ( ) 
+
+if ( external_zlib_ZLIB_ALT_CRUNTIME )
+    add_library ( ${PROJECT_NAME}_md STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    target_include_directories ( ${PROJECT_NAME}_md BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
+    target_compile_options ( ${PROJECT_NAME}_md PRIVATE
+            /wd4244
+            ${ZLIB_ALT_CRUNTIME_MD_LIB} )
+    target_compile_definitions ( ${PROJECT_NAME}_md PRIVATE
+            -D_CRT_SECURE_NO_DEPRECATE
+            -D_CRT_NONSTDC_NO_DEPRECATE )
+
+    add_library ( ${PROJECT_NAME}_mt STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    target_include_directories ( ${PROJECT_NAME}_mt BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
+    target_compile_options ( ${PROJECT_NAME}_mt PRIVATE
+            /wd4244
+            ${ZLIB_ALT_CRUNTIME_MT_LIB} )
+    target_compile_definitions ( ${PROJECT_NAME}_mt PRIVATE
+            -D_CRT_SECURE_NO_DEPRECATE
+            -D_CRT_NONSTDC_NO_DEPRECATE )
+endif ( )
