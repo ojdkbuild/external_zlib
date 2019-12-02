@@ -145,33 +145,26 @@ if ( STATICLIB_USE_DEPLIBS_CACHE )
     endif ( )
 endif ( )
 
-add_library ( ${PROJECT_NAME} STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
+set ( ${PROJECT_NAME}_SOURCES ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS} )
+add_library ( ${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES} )
+set ( ${PROJECT_NAME}_INCLUDES ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR} )
+target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
 
 if ( ${CMAKE_C_COMPILER_ID}x MATCHES "MSVCx" )
-    target_compile_options ( ${PROJECT_NAME} PRIVATE
+    set ( ${PROJECT_NAME}_MSVC_COMPILE_OPTIONS
             /wd4244 )
-    target_compile_definitions ( ${PROJECT_NAME} PRIVATE
-            -D_CRT_SECURE_NO_DEPRECATE  
-            -D_CRT_NONSTDC_NO_DEPRECATE )
-endif ( ) 
-
-if ( external_zlib_ZLIB_ALT_CRUNTIME )
-    add_library ( ${PROJECT_NAME}_md STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-    target_include_directories ( ${PROJECT_NAME}_md BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
-    target_compile_options ( ${PROJECT_NAME}_md PRIVATE
-            /wd4244
-            ${ZLIB_ALT_CRUNTIME_MD_LIB} )
-    target_compile_definitions ( ${PROJECT_NAME}_md PRIVATE
+    target_compile_options ( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_MSVC_COMPILE_OPTIONS} )
+    set ( ${PROJECT_NAME}_MSVC_COMPILE_DEFINITIONS
             -D_CRT_SECURE_NO_DEPRECATE
             -D_CRT_NONSTDC_NO_DEPRECATE )
+    target_compile_definitions ( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_MSVC_COMPILE_DEFINITIONS} )
 
-    add_library ( ${PROJECT_NAME}_mt STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-    target_include_directories ( ${PROJECT_NAME}_mt BEFORE PRIVATE ${${PROJECT_NAME}_ZCONF_H_DIR} ${${PROJECT_NAME}_LOOKASIDE_DIR})
-    target_compile_options ( ${PROJECT_NAME}_mt PRIVATE
-            /wd4244
-            ${ZLIB_ALT_CRUNTIME_MT_LIB} )
-    target_compile_definitions ( ${PROJECT_NAME}_mt PRIVATE
-            -D_CRT_SECURE_NO_DEPRECATE
-            -D_CRT_NONSTDC_NO_DEPRECATE )
+    if ( DEFINED ${PROJECT_NAME}_MSVC_ALT_CRUNTIME )
+        add_library ( ${PROJECT_NAME}_altcr STATIC ${${PROJECT_NAME}_SOURCES} )
+        target_include_directories ( ${PROJECT_NAME}_altcr BEFORE PRIVATE ${${PROJECT_NAME}_INCLUDES} )
+        target_compile_options ( ${PROJECT_NAME}_altcr PRIVATE
+                ${${PROJECT_NAME}_MSVC_COMPILE_OPTIONS}
+                ${${PROJECT_NAME}_MSVC_ALT_CRUNTIME} )
+        target_compile_definitions ( ${PROJECT_NAME}_altcr PRIVATE ${${PROJECT_NAME}_MSVC_COMPILE_DEFINITIONS} )
+    endif ( )
 endif ( )
